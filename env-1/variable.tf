@@ -34,3 +34,22 @@ variable "instance_type" {
 variable "instance_zone" {
   type = string
 }
+
+
+variable "gke_node_type" {
+  description = "machine type for gke node pool"
+  type = string
+}
+
+variable "node_count" {
+  description = "no of nodes in nodepool"
+  type =  number
+}
+variable "min_node_count" {
+  description = "min no of nodes in nodepool"
+  type =  number
+}
+variable "max_node_count" {
+  description = "max no of nodes in nodepool"
+  type =  number
+}

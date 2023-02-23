@@ -14,6 +14,12 @@ variable "region" {
   description = "Region in which the resources will create"
   type        = string
 }
+
+variable "gcp_project" {
+  description = "Project Id of the GCP account"
+  type        = string
+}
+
 # variable "subnet_region" {
 #   type = string
 # }

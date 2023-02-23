@@ -1,4 +1,5 @@
 resource "google_compute_network" "demo_vpc_network" {
+  project                 = var.gcp_project
   name                    = "${var.name}-vpc"
   auto_create_subnetworks = false
   # delete_default_internet_gateway_routes = "true"
@@ -18,7 +19,7 @@ resource "google_compute_subnetwork" "demovpc_public_subnet1" {
   name                     = "${var.name}-public-subnet1-us-central1"
   ip_cidr_range            = var.public_subnet_cidr_range
   network                  = google_compute_network.demo_vpc_network.id
-  region                   = "us-central1"
+  region                   = var.region
   private_ip_google_access = true
   depends_on               = [google_compute_network.demo_vpc_network]
 }
@@ -50,7 +51,7 @@ resource "google_compute_router_nat" "nat" {
   depends_on = [google_compute_router.router]
 }
 
-resource "google_compute_firewall" "demovpc_firewall_ssh" {
+resource "google_compute_firewall" "jump_firewall_rdp" {
   name    = "${var.name}-allow-rdp"
   network = google_compute_network.demo_vpc_network.name
 
@@ -59,11 +60,24 @@ resource "google_compute_firewall" "demovpc_firewall_ssh" {
     ports    = ["3389"]
   }
 
-  source_ranges = ["35.235.240.0/20"]
-  target_tags = ["rdp"]
+  source_ranges = ["103.171.59.0/24"]
+  target_tags = ["rdp-jump"]
   depends_on    = [google_compute_network.demo_vpc_network]
 }
 
+resource "google_compute_firewall" "demovpc_firewall_rdp" {
+  name    = "${var.name}-allow-rdp"
+  network = google_compute_network.demo_vpc_network.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["3389"]
+  }
+
+  source_ranges = ["10.0.0.0/16"]
+  target_tags = ["rdp"]
+  depends_on    = [google_compute_network.demo_vpc_network]
+}
 
 # Allow http
 resource "google_compute_firewall" "allow-http" {

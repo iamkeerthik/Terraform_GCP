@@ -1,47 +1,59 @@
+# resource "google_service_account" "default" {
+#   account_id   = "service-account-id"
+#   display_name = "Service Account"
+# }
+
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster
 resource "google_container_cluster" "gke_cluster" {
-  name               = var.cluster_name
-  location           = var.location
-  initial_node_count = var.initial_node_count
-  min_master_version = var.min_master_version
-  logging_service    = var.logging_service
-  monitoring_service = var.monitoring_service
+  name                     = "${var.name}-cluster"
+  location                 = "us-central1-a"
+  remove_default_node_pool = true
+  initial_node_count       = 1
+  network                  = data.google_compute_network.vpc_network.self_link
+  subnetwork               = data.google_compute_subnetwork.private_subnet1.self_link
+  logging_service          = "logging.googleapis.com/kubernetes"
+  monitoring_service       = "monitoring.googleapis.com/kubernetes"
+  networking_mode          = "VPC_NATIVE"
+
+  # Optional, if you want multi-zonal cluster
+  node_locations = [
+    "us-central1-b"
+  ]
+
   addons_config {
     http_load_balancing {
-      disabled = var.http_load_balancing_disabled
+      disabled = false
     }
     horizontal_pod_autoscaling {
       disabled = false
     }
   }
 
+  release_channel {
+    channel = "REGULAR"
+  }
+
+  # workload_identity_config {
+  #   workload_pool = "devops-v4.svc.id.goog"
+  # }
+
+  # ip_allocation_policy {
+  #   cluster_secondary_range_name  = "k8s-pod-range"
+  #   services_secondary_range_name = "k8s-service-range"
+  # }
+
   private_cluster_config {
     enable_private_nodes    = true
     enable_private_endpoint = false
     master_ipv4_cidr_block  = "172.16.0.0/28"
   }
-
-  # node_config {
-  #   machine_type           = var.machine_type
-  #   disk_size_gb           = var.disk_size_gb
-  #   service_account        = var.service_account
-  #   oauth_scopes           = var.oauth_scopes
-  #   labels                 = var.labels
-  #   taint                  = var.taint
-  #   preemptible            = var.preemptible
-  #   local_ssd_count        = var.local_ssd_count
-  #   tags                   = var.tags
-  #   boot_disk_kms_key      = var.boot_disk_kms_key
-  #   shielded_instance_config {
-  #     enable_integrity_monitoring = var.enable_integrity_monitoring
-  #     enable_secure_boot = var.enable_secure_boot
-  #   }
-  # }
 }
 
+
 resource "google_container_node_pool" "general" {
-  name       = "general"
+  name       = "${var.name}-nodepool"
   cluster    = google_container_cluster.gke_cluster.id
-  node_count = 1
+  node_count = var.node_count
 
   management {
     auto_repair  = true
@@ -50,15 +62,19 @@ resource "google_container_node_pool" "general" {
 
   node_config {
     preemptible  = false
-    machine_type = "e2-small"
-
+    machine_type = var.gke_node_type
+    disk_size_gb = 30
+    disk_type    = "pd-standard"
     labels = {
       role = "general"
     }
-
-    service_account = google_service_account.kubernetes.email
+    service_account = data.google_service_account.k8s_service_account.email
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
+  }
+  autoscaling {
+    min_node_count = var.min_node_count
+    max_node_count = var.max_node_count
   }
 }

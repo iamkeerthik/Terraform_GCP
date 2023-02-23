@@ -1,11 +1,12 @@
-resource "google_compute_instance" "vm_instance_private" {
-  name         = "${var.name}-vm"
+resource "google_compute_instance" "k8s_instance_private" {
+  name         = "${var.name}-k8-setup"
   machine_type = var.instance_type
   zone         = var.instance_zone
-  tags         = ["rdp","http"]
+  tags         = ["rdp"]
   boot_disk {
     initialize_params {
       image = "windows-cloud/windows-2016"
+      type  = "pd-standard"
       size = 50
     }
      
@@ -33,10 +34,14 @@ resource "google_compute_instance" "vm_instance_private" {
 #   }
 
   network_interface {
-    network       = data.google_compute_network.vpc_network.self_link
+    # network       = data.google_compute_network.vpc_network.self_link
     subnetwork    = data.google_compute_subnetwork.private_subnet1.self_link
-    # access_config {
-    #      assign_external_ip = false
-    #  }
+  }
+  # metadata_startup_script = "echo hi > /test.txt"
+
+  service_account {
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    email  = data.google_service_account.k8s_service_account.email
+    scopes = ["cloud-platform"]
   }
 }
