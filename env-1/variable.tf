@@ -53,3 +53,18 @@ variable "max_node_count" {
   description = "max no of nodes in nodepool"
   type =  number
 }
+
+#########Pub-Sub##########
+variable "topics" {
+  type        = list(string)
+  description = "A list of Pub/Sub topic names to create"
+}
+
+variable "subscriptions" {
+  type        = list(string)
+  description = "A list of Pub/Sub subscription names to create"
+}
+
+variable "db_tier" {
+  type = string
+}

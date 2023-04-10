@@ -18,3 +18,10 @@ gke_node_type = "e2-small"
 node_count = 1
 min_node_count = 1
 max_node_count = 2
+
+#######Pub-Sub########
+topics = [ "topic-1",  "topic-2",  "topic-3"]
+subscriptions = [ "sub-1",  "sub-2",  "sub-3"]
+
+########SQL############
+db_tier = "db-f1-micro"

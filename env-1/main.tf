@@ -11,6 +11,9 @@ module "vpc" {
 
 module "iam-service_account" {
   source = "../modules/iam-service-accounts"
+  depends_on = [
+    module.vpc
+  ]
   name = var.name
   gcp_project = var.gcp_project
   
@@ -38,4 +41,24 @@ module "gke_cluster" {
   node_count = var.node_count
   min_node_count = var.min_node_count
   max_node_count = var.max_node_count
+}
+
+module "pub-sub" {
+  source = "../modules/pub-sub"
+  depends_on = [
+    module.vpc
+  ]
+  topics = var.topics
+  subscriptions = var.subscriptions
+}
+
+module "sql" {
+  source = "../modules/SQL"
+  depends_on = [
+    module.vpc
+  ]
+  name              = var.name
+  gcp_project       = var.gcp_project
+  region            = var.region
+  db_tier = var.db_tier
 }

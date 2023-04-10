@@ -13,7 +13,7 @@ resource "google_container_cluster" "gke_cluster" {
   subnetwork               = data.google_compute_subnetwork.private_subnet1.self_link
   logging_service          = "logging.googleapis.com/kubernetes"
   monitoring_service       = "monitoring.googleapis.com/kubernetes"
-  networking_mode          = "VPC_NATIVE"
+  # networking_mode          = "VPC_NATIVE"
 
   # Optional, if you want multi-zonal cluster
   node_locations = [
@@ -37,10 +37,10 @@ resource "google_container_cluster" "gke_cluster" {
   #   workload_pool = "devops-v4.svc.id.goog"
   # }
 
-  # ip_allocation_policy {
-  #   cluster_secondary_range_name  = "k8s-pod-range"
-  #   services_secondary_range_name = "k8s-service-range"
-  # }
+  ip_allocation_policy {
+    # cluster_secondary_range_name  = "k8s-pod-range"
+    # services_secondary_range_name = "k8s-service-range"
+  }
 
   private_cluster_config {
     enable_private_nodes    = true
