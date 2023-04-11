@@ -37,7 +37,7 @@ resource "google_compute_instance" "pluto_instance_private" {
     # network       = data.google_compute_network.vpc_network.self_link
     subnetwork    = data.google_compute_subnetwork.private_subnet1.self_link
   }
-  # metadata_startup_script = "echo hi > /test.txt"
+  metadata_startup_script = var.pluto_script
 
   service_account {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.

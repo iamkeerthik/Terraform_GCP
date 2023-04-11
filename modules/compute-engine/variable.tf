@@ -16,6 +16,10 @@ variable "gcp_project" {
   type        = string
 }
 
+variable "pluto_script" {
+  description = "startup script for pluto"
+  type = string
+}
 # variable "subnet_self_link" {
 #   type = string
 # }
