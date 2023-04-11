@@ -44,31 +44,31 @@ module "compute-engine" {
 #   max_node_count = var.max_node_count
 # }
 
-# module "pub-sub" {
-#   source = "../modules/pub-sub"
-#   depends_on = [
-#     module.vpc
-#   ]
-#   topics = var.topics
-#   subscriptions = var.subscriptions
-# }
-
-module "sql" {
-  source = "../modules/SQL"
+module "pub-sub" {
+  source = "../modules/pub-sub"
   depends_on = [
     module.vpc
   ]
-  name              = var.name
-  gcp_project       = var.gcp_project
-  region            = var.region
-  db_tier = var.db_tier
+  topics = var.topics
+  subscriptions = var.subscriptions
 }
+
+# module "sql" {
+#   source = "../modules/SQL"
+#   depends_on = [
+#     module.vpc
+#   ]
+#   name              = var.name
+#   gcp_project       = var.gcp_project
+#   region            = var.region
+#   db_tier = var.db_tier
+# }
 
 module "monitoring" {
   source = "../modules/monitor"
   depends_on = [
     module.compute-engine,
-    module.sql
+    # module.sql
   ]
   name = var.name
   instance_zone = var.instance_zone
