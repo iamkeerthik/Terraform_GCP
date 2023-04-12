@@ -31,18 +31,18 @@ module "compute-engine" {
     pluto_script  = file("pluto-userdata.ps1")
 }
 
-# module "gke_cluster" {
-#   source = "../modules/gke"
-#   depends_on = [
-#     module.iam-service_account
-#   ]
-#   gcp_project = var.gcp_project
-#   name = var.name
-#   gke_node_type = var.gke_node_type
-#   node_count = var.node_count
-#   min_node_count = var.min_node_count
-#   max_node_count = var.max_node_count
-# }
+module "gke_cluster" {
+  source = "../modules/gke"
+  depends_on = [
+    module.iam-service_account
+  ]
+  gcp_project = var.gcp_project
+  name = var.name
+  gke_node_type = var.gke_node_type
+  node_count = var.node_count
+  min_node_count = var.min_node_count
+  max_node_count = var.max_node_count
+}
 
 module "pub-sub" {
   source = "../modules/pub-sub"
@@ -53,22 +53,22 @@ module "pub-sub" {
   subscriptions = var.subscriptions
 }
 
-# module "sql" {
-#   source = "../modules/SQL"
-#   depends_on = [
-#     module.vpc
-#   ]
-#   name              = var.name
-#   gcp_project       = var.gcp_project
-#   region            = var.region
-#   db_tier = var.db_tier
-# }
+module "sql" {
+  source = "../modules/SQL"
+  depends_on = [
+    module.vpc
+  ]
+  name              = var.name
+  gcp_project       = var.gcp_project
+  region            = var.region
+  db_tier = var.db_tier
+}
 
 module "monitoring" {
   source = "../modules/monitor"
   depends_on = [
     module.compute-engine,
-    # module.sql
+    module.sql
   ]
   name = var.name
   instance_zone = var.instance_zone
