@@ -54,6 +54,10 @@ variable "max_node_count" {
   type =  number
 }
 
+variable "location" {
+  description = "cluster location"
+  type = string
+}
 #########Pub-Sub##########
 variable "topics" {
   type        = list(string)

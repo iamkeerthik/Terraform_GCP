@@ -18,6 +18,7 @@ gke_node_type = "e2-small"
 node_count = 1
 min_node_count = 1
 max_node_count = 2
+location = "us-central1-a"
 
 #######Pub-Sub########
 topics = [ "topic-1",  "topic-2",  "topic-3"]

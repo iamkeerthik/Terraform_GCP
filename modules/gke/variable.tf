@@ -13,6 +13,16 @@ variable "gke_node_type" {
   type = string
 }
 
+variable "location" {
+  description = "cluster location"
+  type = string
+}
+
+variable "region" {
+  description = "Region in which the resources will create"
+  type        = string
+}
+
 variable "node_count" {
   description = "no of nodes in nodepool"
   type =  number

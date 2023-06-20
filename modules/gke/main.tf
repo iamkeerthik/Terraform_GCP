@@ -6,7 +6,7 @@
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster
 resource "google_container_cluster" "gke_cluster" {
   name                     = "${var.name}-cluster"
-  location                 = "us-central1-a"
+  location                 = var.location
   remove_default_node_pool = true
   initial_node_count       = 1
   network                  = data.google_compute_network.vpc_network.self_link
@@ -76,5 +76,9 @@ resource "google_container_node_pool" "general" {
   autoscaling {
     min_node_count = var.min_node_count
     max_node_count = var.max_node_count
+  }
+
+   provisioner "local-exec" {
+    command = "gcloud container clusters get-credentials ${google_container_cluster.gke_cluster.name} --region ${var.region}"
   }
 }
